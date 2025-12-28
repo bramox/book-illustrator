@@ -1,0 +1,8 @@
+Django
+django-model-utils
+djangorestframework
+google-genai
+pillow
+reportlab
+singlemodeladmin
+python-dotenv
