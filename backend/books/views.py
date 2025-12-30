@@ -79,7 +79,7 @@ def get_book_content_with_markers(text):
 
     for model_name in models_to_try:
         try:
-            print(f"  - Используем модель {model_name}...")
+            print(f"  - We use the model {model_name}...")
             response = client.models.generate_content(
                 model=model_name,
                 contents=prompt,
@@ -90,21 +90,21 @@ def get_book_content_with_markers(text):
             )
             return json.loads(response.text)
         except Exception as e:
-            print(f"  ⚠️ Ошибка с {model_name}: {e}")
+            print(f"  ⚠️ Error with {model_name}: {e}")
             if "429" in str(e):
-                print("  ⌛ Лимит исчерпан, ждем 10 секунд...")
+                print("  ⌛ Limit reached, wait 10 seconds...")
                 time.sleep(10)
             else:
                 continue
 
-    raise Exception("Не удалось получить ответ ни от одной из моделей Gemini.")
+    raise Exception("Unable to get a response from any of the Gemini models.")
 
 
 def generate_images(book_data):
     """
-    Проходит по контенту, находит image_prompt и генерирует изображения.
+    Iterates through the content, finds image_prompt and generates images.
     """
-    print("🎨 Генерируем иллюстрации...")
+    print("🎨 Generating illustrations...")
 
     if not os.path.exists("images"):
         os.makedirs("images")
@@ -114,15 +114,15 @@ def generate_images(book_data):
         if item["type"] == "image_prompt":
             prompt = item["data"]
             image_count += 1
-            print(f"  - Генерация картинки {image_count}: {prompt[:50]}...")
+            print(f"  - Generating a picture {image_count}: {prompt[:50]}...")
 
-            # Пробуем несколько моделей для генерации изображений
+            # We try using several models to generate images
             image_models = ["imagen-3.0-generate-001", "imagen-4.0-generate-001"]
             success = False
 
             for img_model in image_models:
                 try:
-                    print(f"    - Пробуем {img_model}...")
+                    print(f"    - Trying with {img_model}...")
                     resp_alt = client.models.generate_content(
                         model=img_model,
                         contents=prompt
@@ -135,16 +135,16 @@ def generate_images(book_data):
                                 image_path = f"images/gen_{image_count}.png"
                                 image.save(image_path)
                                 item["image_path"] = image_path
-                                print(f"    ✅ Сохранено (multimodal): {image_path}")
+                                print(f"    ✅ Save (multimodal): {image_path}")
                                 success = True
                                 break
                 except Exception as e:
-                    print(f"    ❌ Ошибка с {img_model}: {e}")
+                    print(f"    ❌ Error with {img_model}: {e}")
 
             if not success:
-                # Попытка через gemini-2.0-flash-exp-image-generation
+                # Trying with gemini-2.0-flash-exp-image-generation
                 try:
-                    print("    - Пробуем gemini-2.0-flash-exp-image-generation...")
+                    print("    - Trying with gemini-2.0-flash-exp-image-generation...")
                     resp_alt = client.models.generate_content(
                         model="gemini-2.0-flash-exp-image-generation",
                         contents=prompt
@@ -157,20 +157,20 @@ def generate_images(book_data):
                                 image_path = f"images/gen_{image_count}.png"
                                 image.save(image_path)
                                 item["image_path"] = image_path
-                                print(f"    ✅ Сохранено (multimodal): {image_path}")
+                                print(f"    ✅ Save (multimodal): {image_path}")
                                 success = True
                                 break
                 except Exception as e2:
-                    print(f"    ❌ Все попытки генерации провалены.")
+                    print(f"    ❌ All generation attempts failed.")
 
     return book_data
 
 
 def create_pdf(book_data, output_filename="generated_book.pdf"):
     """
-    Создает PDF файл на основе полученных данных.
+    Creates a PDF file based on the received data.
     """
-    print(f"📚 Создаем PDF: {output_filename}...")
+    print(f"📚 Create a PDF: {output_filename}...")
     doc = SimpleDocTemplate(output_filename, pagesize=letter)
     styles = getSampleStyleSheet()
 
@@ -190,7 +190,7 @@ def create_pdf(book_data, output_filename="generated_book.pdf"):
 
     # Титульная страница
     story.append(Spacer(1, 2 * inch))
-    story.append(Paragraph(book_data.get("title", "Книга"), styles['BookTitle']))
+    story.append(Paragraph(book_data.get("title", "Book"), styles['BookTitle']))
     story.append(Paragraph(book_data.get("author", ""), styles['BookAuthor']))
     story.append(PageBreak())
 
@@ -207,7 +207,7 @@ def create_pdf(book_data, output_filename="generated_book.pdf"):
                 story.append(Spacer(1, 12))
 
     doc.build(story)
-    print(f"✨ PDF готов: {output_filename}")
+    print(f"✨ PDF is ready: {output_filename}")
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -223,13 +223,13 @@ class BookViewSet(viewsets.ModelViewSet):
 
         try:
             print("Step 1: Getting book content with markers")
-            # 1. Получаем структуру
+            # 1. We get the structure
             book_data = get_book_content_with_markers(book.text)
             BookLlm.objects.create(book=book, text=json.dumps(book_data, ensure_ascii=False, indent=2))
             print("Step 1 finished")
 
             print("Step 2: Using test images")
-            # 2. Используем тестовые картинки
+            # 2. Using test images
             test_images_dir = 'test_images'
             image_paths = [os.path.join(test_images_dir, f) for f in os.listdir(test_images_dir) if f.endswith(('.png', '.jpg', '.jpeg'))]
             print(f"Found {len(image_paths)} test images.")
@@ -245,13 +245,13 @@ class BookViewSet(viewsets.ModelViewSet):
             print("Step 2 finished")
 
             print("Step 3: Creating PDF")
-            # 3. Создаем PDF
+            # 3. Create PDF
             pdf_filename = f"generated_book_{book.id}.pdf"
             create_pdf(book_data, pdf_filename)
             print("Step 3 finished")
 
             print("Step 4: Saving PDF to model")
-            # 4. Сохраняем PDF в модель
+            # 4. Saving PDF to model
             pdf_path = os.path.join(settings.BASE_DIR, pdf_filename)
             if os.path.exists(pdf_path):
                 with open(pdf_path, 'rb') as f:
@@ -261,7 +261,7 @@ class BookViewSet(viewsets.ModelViewSet):
                 print("Step 4 finished")
 
                 print("Step 5: Returning PDF")
-                # 5. Отдаем PDF
+                # 5. Returning PDF
                 response = FileResponse(open(pdf_path, 'rb'), as_attachment=True, filename=pdf_filename)
                 return response
             else:

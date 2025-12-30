@@ -1,70 +1,70 @@
-# Генератор иллюстрированных книг
+# Illustrated Book Generator
 
-Этот проект представляет собой веб-приложение для генерации иллюстрированных книг с использованием больших языковых моделей (LLM).
+This project is a web application for generating illustrated books using large language models (LLMs).
 
-## Описание
+## Description
 
-Проект состоит из двух основных частей:
+The project consists of two main parts:
 
-*   **Бэкенд**: Написан на Python с использованием Django и Django REST Framework. Он предоставляет API для обработки текста книги, взаимодействия с Google Gemini для генерации структуры книги и иллюстраций, и последующей сборки PDF-файла.
-*   **Фронтенд**: Написан на React. Предоставляет пользовательский интерфейс для ввода данных книги и скачивания сгенерированного PDF-файла.
+*   **Backend**: Written in Python using Django and Django REST Framework. It provides an API for processing the book's text, interacting with Google Gemini to generate the book's structure and illustrations, and then assembling a PDF file.
+*   **Frontend**: Written in React. It provides a user interface for entering book data and downloading the generated PDF file.
 
-## Структура проекта
+## Project Structure
 
 ```
 .
-├── backend/         # Django-проект
-│   ├── books/       # Приложение для работы с книгами
-│   ├── core/        # Основные настройки проекта
-│   ├── test_images/ # Тестовые изображения для генерации PDF
+├── backend/         # Django project
+│   ├── books/       # Application for working with books
+│   ├── core/        # Main project settings
+│   ├── test_images/ # Test images for PDF generation
 │   └── ...
-├── frontend/        # React-проект
+├── frontend/        # React project
 │   └── src/
 └── README.md
 ```
 
-## Установка и запуск
+## Installation and Launch
 
-### Требования
+### Requirements
 
 *   Python 3.x
-*   Node.js и npm
+*   Node.js and npm
 
-### Бэкенд
+### Backend
 
-1.  **Перейдите в директорию бэкенда:**
+1.  **Navigate to the backend directory:**
     ```bash
     cd backend
     ```
 
-2.  **Создайте и активируйте виртуальное окружение:**
+2.  **Create and activate a virtual environment:**
     ```bash
     python -m venv venv
-    source venv/bin/activate  # Для Linux/macOS
-    # venv\Scripts\activate    # Для Windows
+    source venv/bin/activate  # For Linux/macOS
+    # venv\Scripts\activate    # For Windows
     ```
 
-3.  **Установите зависимости:**
+3.  **Install dependencies:**
     ```bash
     pip install -r requirements/base.txt
     ```
 
-4.  **Создайте файл `.env`** в директории `backend` на основе `env.example` и укажите ваш `GEMINI_API_KEY`:
+4.  **Create a `.env` file** in the `backend` directory based on `env.example` and specify your `GEMINI_API_KEY`:
     ```
     GEMINI_API_KEY=your_api_key_here
     ```
 
-5.  **Примените миграции:**
+5.  **Apply migrations:**
     ```bash
     python manage.py migrate
     ```
 
-6. **Создайте админа для django:**
+6. **Create a superuser for Django:**
     ```bash
     python manage.py createsuperuser
     ```
 
-    ***По запросу вводим имя для админа, любую почту и свой пароль, например:***
+    ***When prompted, enter a username, any email, and your password, for example:***
     ```bash
     Username (leave blank to use 'oleg'): admin
     Email address: admin@example.com
@@ -73,44 +73,44 @@
     Superuser created successfully.
     ```
 
-7.  **Запустите сервер разработки:**
+7.  **Run the development server:**
     ```bash
     python manage.py runserver
     ```
 
-### Фронтенд
+### Frontend
 
-1.  **Перейдите в директорию фронтенда:**
+1.  **Navigate to the frontend directory:**
     ```bash
     cd frontend
     ```
 
-2.  **Установите зависимости:**
+2.  **Install dependencies:**
     ```bash
     npm install
     ```
 
-3.  **Запустите сервер разработки:**
+3.  **Run the development server:**
     ```bash
     npm run dev
     ```
 
-После запуска обоих серверов, откройте [http://localhost:5173/](http://localhost:5173/) в вашем браузере.
+After starting both servers, open [http://localhost:5173/](http://localhost:5173/) in your browser.
 
-Админ панель Django доступна по адресу [http://localhost:8000/admin](http://localhost:8000/admin)
+The Django admin panel is available at [http://localhost:8000/admin](http://localhost:8000/admin)
 
-## Как это работает
+## How It Works
 
-1.  Пользователь вводит название, автора и текст книги (тестовый текст можно взять из файла `test_text.txt`) в форме на фронтенде.
-2.  Фронтенд отправляет POST-запрос на API бэкенда.
-3.  Бэкенд:
-    *   Сохраняет исходные данные книги в базу данных.
-    *   Отправляет текст книги в Google Gemini для получения структурированного контента (текстовые блоки и промпты для изображений).
-    *   Сохраняет полученную структуру в базу данных.
-    *   Для каждого промпта генерирует (или в данном случае, использует тестовые из папки `test_images`) изображения и сохраняет их.
-    *   Собирает PDF-файл из текстовых блоков и сгенерированных изображений.
-    *   Сохраняет сгенерированный PDF-файл в базу данных.
-    *   Возвращает PDF-файл в качестве ответа на запрос.
-4.  Фронтенд получает PDF-файл и предлагает пользователю его скачать.
+1.  The user enters the title, author, and text of the book (test text can be taken from the `test_text.txt` file) in the form on the frontend.
+2.  The frontend sends a POST request to the backend API.
+3.  The backend:
+    *   Saves the initial book data to the database.
+    *   Sends the book text to Google Gemini to get structured content (text blocks and prompts for images).
+    *   Saves the received structure to the database.
+    *   For each prompt, it generates (or in this case, uses test images from the `test_images` folder) and saves the images.
+    *   Assembles a PDF file from the text blocks and generated images.
+    *   Saves the generated PDF file to the database.
+    *   Returns the PDF file as a response to the request.
+4.  The frontend receives the PDF file and prompts the user to download it.
 
 ![demo](backend/docs/demo/book.gif)

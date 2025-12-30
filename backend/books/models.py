@@ -3,9 +3,19 @@ from main.models import Date, Common, PathAndRename
 
 
 class Book(Date):
-    title = models.CharField(verbose_name="Название книги", max_length=255, blank=True)
-    author = models.CharField(verbose_name="Автор/Авторы книги", max_length=255, blank=True)
-    text = models.TextField(verbose_name="Содержание книги")
+    title = models.CharField(
+        verbose_name="Book title",
+        max_length=255,
+        blank=True
+    )
+    author = models.CharField(
+        verbose_name="Author/Authors of the book",
+        max_length=255,
+        blank=True
+    )
+    text = models.TextField(
+        verbose_name="Text of the book"
+    )
 
     def __str__(self):
         return f'id:{self.id}, title:{self.title}'
@@ -19,8 +29,8 @@ class BookLlm(Common):
         verbose_name="Book",
     )
     text = models.TextField(
-        verbose_name="Структурированный текст книги",
-        help_text='Структурированный текст книги созданный LLM',
+        verbose_name="Structured text of the book",
+        help_text='Structured text of the book created by LLM',
     )
 
     def __str__(self):
@@ -28,7 +38,11 @@ class BookLlm(Common):
 
 
 class Image(Common):
-    title = models.CharField(verbose_name="Название иллюстрации", max_length=255, blank=True)
+    title = models.CharField(
+        verbose_name="Illustration title",
+        max_length=255,
+        blank=True
+    )
     book = models.ForeignKey(
         to=Book,
         related_name='images',
@@ -38,9 +52,6 @@ class Image(Common):
     illustration = models.ImageField(
         verbose_name='Illustration',
         upload_to=PathAndRename('books/image/illustration'),
-        # help_text='Max size 800x800px. JPG',
-        # null=True,
-        # blank=True,
     )
     image_prompt =  models.CharField(
         verbose_name="Illustration prompt",

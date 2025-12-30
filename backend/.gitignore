@@ -226,3 +226,6 @@ tasks/
 gulpfile.babel.js
 package.json
 package-lock.json
+
+
+tmp/

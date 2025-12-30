@@ -10,7 +10,7 @@ from model_utils.managers import QueryManager
 
 class Date(models.Model):
     """
-    Дата / абстрактный класс
+    Date / abstract class
     """
 
     created = models.DateTimeField(
@@ -30,15 +30,15 @@ class Date(models.Model):
 
 class Common(Date):
     """
-    Общий / абстрактный класс
+    Common / abstract class
     """
 
     class Status(models.TextChoices):
-        DRAFT = 'draft', 'Черновик'
-        PUBLISHED = 'published', 'Опубликовано'
+        DRAFT = 'draft', 'Draft'
+        PUBLISHED = 'published', 'Published'
 
     status = models.CharField(
-        verbose_name='Статус',
+        verbose_name='Status',
         choices=Status.choices,
         default=Status.PUBLISHED,
         max_length=50,
@@ -54,7 +54,7 @@ class Common(Date):
 
 class Single(models.Model):
     """
-    Ограничивает класс одним инстансом
+    Limits a class to one instance
     """
 
     class Meta:
@@ -62,14 +62,14 @@ class Single(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk and self.__class__.objects.exists():
-            raise ValidationError('Может быть только один объект этого класса')
+            raise ValidationError('There can only be one object of this class.')
         return super().save(*args, **kwargs)
 
 
 @deconstructible
 class PathAndRename:
     """
-    Класс используется для генерации уникальных имён в FileField, ImageField
+    The class is used to generate unique names in FileField, ImageField
     Ex.: upload_to=PathAndRename('app/model/field')
     """
 
@@ -84,30 +84,30 @@ class PathAndRename:
 
 class Preference(Single):
     """
-    Настройки
+    Preference
     """
 
     site_title = models.CharField(
-        verbose_name='Название сайта',
+        verbose_name='Website title',
         max_length=200,
         blank=True,
     )
 
     site_description = models.TextField(
-        verbose_name='Описание сайта',
+        verbose_name='Website description',
         blank=True,
     )
 
     site_photo = models.ImageField(
-        verbose_name='Фотография сайта',
+        verbose_name='Photo of the site',
         upload_to=PathAndRename('main/preference/site_photo'),
-        help_text='Загружать JPG с размерами 1200x630px',
+        help_text='Upload JPG with dimensions 1200x630px',
         blank=True,
     )
 
     class Meta:
-        verbose_name = 'настройки'
-        verbose_name_plural = 'настройки'
+        verbose_name = 'preference'
+        verbose_name_plural = 'preference'
 
     def __str__(self):
-        return 'Настройки'
+        return 'Preference'
