@@ -1,6 +1,7 @@
 Django
 django-model-utils
 djangorestframework
+django-cleanup
 google-genai
 pillow
 reportlab

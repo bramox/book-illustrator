@@ -32,20 +32,45 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
-# Application definition
+# # Application definition
 
-INSTALLED_APPS = [
+# INSTALLED_APPS = [
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+#     'rest_framework',
+#     'corsheaders',
+#     'books',
+#     'main',
+# ]
+
+# Application definition
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+THIRD_APPS = [
     'rest_framework',
     'corsheaders',
+]
+
+CUSTOM_APPS = [
     'books',
     'main',
 ]
+
+# django_cleanup should be placed last in INSTALLED_APPS.
+INSTALLED_APPS = DJANGO_APPS + THIRD_APPS + CUSTOM_APPS + ['django_cleanup.apps.CleanupConfig']
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -112,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-# LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -149,4 +173,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '*** GEMINI_API_KEY DOES NOT EXIST ***')
+USE_TEST_IMAGES = os.getenv('USE_TEST_IMAGES', 'False').lower() in ('true', '1', 't')
 print(f'Your GEMINI_API_KEY: {GEMINI_API_KEY}')
+print(f'USE_TEST_IMAGES: {USE_TEST_IMAGES}')

@@ -51,8 +51,12 @@ The project consists of two main parts:
 
 4.  **Create a `.env` file** in the `backend` directory based on `env.example` and specify your `GEMINI_API_KEY`:
     ```
-    GEMINI_API_KEY=your_api_key_here
+    GEMINI_API_KEY="your_api_key_here"
+    USE_TEST_IMAGES=True
     ```
+    The `USE_TEST_IMAGES` variable allows you to switch between image generation modes:
+    * `True`: Use local images from the `backend/test_images` folder for generation. This is useful for testing the PDF generation functionality without spending LLM tokens.
+    * `False`: Generate images using the Google Gemini API.
 
 5.  **Apply migrations:**
     ```bash
@@ -107,10 +111,14 @@ The Django admin panel is available at [http://localhost:8000/admin](http://loca
     *   Saves the initial book data to the database.
     *   Sends the book text to Google Gemini to get structured content (text blocks and prompts for images).
     *   Saves the received structure to the database.
-    *   For each prompt, it generates (or in this case, uses test images from the `test_images` folder) and saves the images.
+    *   Depending on the `USE_TEST_IMAGES` setting, it either generates images via the API or uses local test images from the `test_images` folder, saving them to the database.
     *   Assembles a PDF file from the text blocks and generated images.
     *   Saves the generated PDF file to the database.
     *   Returns the PDF file as a response to the request.
 4.  The frontend receives the PDF file and prompts the user to download it.
 
+### User Interface
 ![demo](backend/docs/demo/book.gif)
+
+### Admin Site
+![demo](backend/docs/demo/admin.gif)
